@@ -1,12 +1,14 @@
 #TODO:
 # - lookup different audio systems/handlers for python
 # - possible choices: (https://wiki.python.org/python/multimedia/Audio.html)
-#   - pyAudio: bindings forPortAudio input/output
+#   - pyAudio: bindings for PortAudio input/output
 #   - pyDub: audio manipulation
 #   - ffmpeg: decoder, encoder, transcoder, mux, streamer
 
 import os
 import glob
+import inspect
+import time
 from pathlib import Path
 from pydub import AudioSegment
 from pydub.playback import play
@@ -32,7 +34,9 @@ def playback(audio):
 
     chorus = chorus.fade_in(2000).fade_out(3000)
 
-    play(chorus)
+    params = {k: v for k, v in vars(chorus).items() if k != "_data"}
+    print(params)
+    #play(chorus)
 
 """
     Function to list the test audios in the test audio folder

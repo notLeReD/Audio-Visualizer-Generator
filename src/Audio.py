@@ -5,19 +5,28 @@
 #   - pyDub: audio manipulation
 #   - ffmpeg: decoder, encoder, transcoder, mux, streamer
 
+
 import os
-import glob
-import inspect
-import time
+import subprocess
+import tempfile
 import tkinter as tk
 from tkinter import filedialog
 from pathlib import Path
 from pydub import AudioSegment
 from pydub.playback import play
+from pydub.playback import _play_with_ffplay
 
 #change these later when implementing
 DIR_AUDIO = Path(__file__).resolve().parent.parent/"audio"
-EXTENSIONS = {".mp3", ".wav"}
+extensions = [".mp3", ".wav", ".aif", ".flac", ".alac", ".wma", ".aac", ".ogg"]
+patterns = " ".join(f"*{ext}" for ext in extensions)
+FILETYPES = [
+    ("Audio files", patterns),
+    ("MP3", "*.mp3"),
+    ("WAV", "*.wav"),
+    ("FLAC", "*.flac"),
+    ("All files", "*.*"),
+]
 
 """
     A simple test function to test pyDub features through functions
@@ -38,30 +47,35 @@ def playback(audio):
 
     params = {k: v for k, v in vars(chorus).items() if k != "_data"}
     print(params)
-    play(chorus)
+    ffplay_play(chorus)
 
-def playback_nochange(audio):
-    play(audio)
+def ffplay_play(audio):
+    subprocess.call(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", audio])
 
-def pick_audio_from_directory():
+def prompt_user():
     root = tk.Tk()
     root.withdraw()
 
-    file = filedialog.askopenfilename(title="Select a file")
+    file = filedialog.askopenfilename(title="Select a file", filetypes=FILETYPES)
 
-    print(file)
+    root.destroy()
 
     if file:
-        return AudioSegment.from_file(file)
+        return file
+
+    return None
+
+def print_attrb(file):
+
+    song = AudioSegment.from_file(file)
+
+    print(song.channels, song.frame_rate, song.sample_width)
+    print(song.dBFS, song.max, song.max_possible_amplitude, len(song))
 
 def main():
+    song = prompt_user()
 
-    #song = pick_audio()
-    song = pick_audio_from_directory()
-
-    print(song)
-    
-    playback_nochange(song)
+    ffplay_play(song)
 
     return()
 

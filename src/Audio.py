@@ -98,6 +98,7 @@ def print_attrb(song):
 def main():
     song = prompt_user()
 
+    print_attrb(song)
 
     ffplay_play(song)
 

@@ -9,6 +9,8 @@ import os
 import glob
 import inspect
 import time
+import tkinter as tk
+from tkinter import filedialog
 from pathlib import Path
 from pydub import AudioSegment
 from pydub.playback import play
@@ -36,41 +38,30 @@ def playback(audio):
 
     params = {k: v for k, v in vars(chorus).items() if k != "_data"}
     print(params)
-    #play(chorus)
+    play(chorus)
 
-"""
-    Function to list the test audios in the test audio folder
+def playback_nochange(audio):
+    play(audio)
 
-    WILL BE DEPRECATED LATER
-"""
-def list_audio():
-    print(DIR_AUDIO)
-    return sorted(
-        f for f in DIR_AUDIO.iterdir()
-        if f.suffix.lower() in EXTENSIONS
-    )
+def pick_audio_from_directory():
+    root = tk.Tk()
+    root.withdraw()
 
-"""
-    Function to pick audios from the test audio folder
+    file = filedialog.askopenfilename(title="Select a file")
 
-    WILL BE DEPRECATED LATER
-"""
-def pick_audio():
-    files = list_audio()
-    if not files:
-        raise FileNotFoundError(f"No audio files found in {DIR_AUDIO}")
+    print(file)
 
-    for i, f in enumerate(files):
-        print(f"{i}: {f.name}")
-
-    while True:
-        choice = int(input("Pick a file number: "))
-        return AudioSegment.from_file(files[choice])
+    if file:
+        return AudioSegment.from_file(file)
 
 def main():
 
-    song = pick_audio()
-    playback(song)
+    #song = pick_audio()
+    song = pick_audio_from_directory()
+
+    print(song)
+    
+    playback_nochange(song)
 
     return()
 

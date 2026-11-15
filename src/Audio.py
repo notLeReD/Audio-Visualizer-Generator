@@ -49,8 +49,34 @@ def playback(audio):
     print(params)
     ffplay_play(chorus)
 
-def ffplay_play(audio):
-    subprocess.call(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", audio])
+"""
+    A custom ffplay wrapper to play audio files
+
+    - PyDub has a common Windows bug with it's built in ffplay player 
+    where tempfiles cannot be played due to a PermissionDenied error
+
+    - To avoid this:
+    1. Create temp file (mkstemp)
+    2. Close Python's handle on it
+    3. Write the audio onto it
+    4. Play w/ ffplay
+    5. Delete the temp file
+
+    #param song: file to play
+    #type Audiosegment
+"""
+def ffplay_play(song):
+    # Windows: close handle first or ffplay throws PermissionError
+    fd, path = tempfile.mkstemp(suffix=".wav")
+    os.close(fd)
+
+    print(tempfile.gettempdir)
+
+    try:
+        song.export(path, format="wav")
+        subprocess.call(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", path])
+    finally:
+        os.remove(path)
 
 def prompt_user():
     root = tk.Tk()
@@ -61,19 +87,17 @@ def prompt_user():
     root.destroy()
 
     if file:
-        return file
+        return AudioSegment.from_file(file)
 
     return None
 
-def print_attrb(file):
-
-    song = AudioSegment.from_file(file)
-
+def print_attrb(song):
     print(song.channels, song.frame_rate, song.sample_width)
     print(song.dBFS, song.max, song.max_possible_amplitude, len(song))
 
 def main():
     song = prompt_user()
+
 
     ffplay_play(song)
 

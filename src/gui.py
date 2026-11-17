@@ -11,6 +11,7 @@ class App(tk.Tk):
         self.minsize(350, 350)
         self.maxsize(850, 850)
         self.geometry("500x500+100+100")
+        self.loaded_song = None
 
         self.widgets()
 
@@ -21,11 +22,24 @@ class App(tk.Tk):
             command=self.on_load
         )
         
-        self.load_button.pack(padx=200, pady=200)
+        self.load_button.pack(pady=10)
+
+        self.play_button = tk.Button(
+            self, 
+            text="Play Audio", 
+            command=self.on_play
+        )
+
+        self.play_button.pack(pady=10)
 
     def on_load(self):
-        aud.prompt_user()
-        print ("Load clicked!")
+        self.loaded_song = aud.prompt_user()
+        print(self.loaded_song)
+        print("Load clicked!")
+
+    def on_play(self):
+        aud.ffplay_play(self.loaded_song)
+        print("Play Clicked!")
 
 
 def main():

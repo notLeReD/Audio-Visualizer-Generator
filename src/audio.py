@@ -37,6 +37,8 @@ class Song():
         self.sample_width = audio.sample_width
         self.dBFS = audio.dBFS
         self.peak_amp = audio.max
+        self._proc = None
+        self._tmp_path = None
 
     def __str__(self):
         return f"{self.channels}, {self.frame_rate}, {self.sample_width}, {self.dBFS}, {self.peak_amp}, {len(self.song)}"
@@ -58,18 +60,40 @@ class Song():
     #type Audiosegment
     """
     def ffplay_play(self):
+        self.stop()
+
         # Windows: close handle first or ffplay throws PermissionError
         fd, path = tempfile.mkstemp(suffix=".wav")
         os.close(fd)
 
-        print(tempfile.gettempdir)
+        self._tmp_path = path
 
-        try:
-            self.song.export(path, format="wav")
-            subprocess.call(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", path])
-        finally:
-            os.remove(path)
+        self.song.export(path, format="wav")
+        self._proc = subprocess.Popen(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", path])
     
+    def stop(self):
+        #subprocess for ffplay exists
+        if self._proc is not None and self._proc.poll() is None:
+            self._proc.terminate()
+
+            #if it still exists after terminating fully kill the process
+            try:
+                self._proc.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self._proc.kill()
+                self._proc.wait()
+
+        self._proc = None
+
+        # remove the tmp path for ffplay
+        if self._tmp_path and os.path.exists(self._tmp_path):
+            try:
+                os.remove(self._tmp_path)
+            except OSError:
+                pass
+
+        self._tmp_path = None
+            
 
 """
     A simple test function to test pyDub features through functions

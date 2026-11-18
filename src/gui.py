@@ -45,13 +45,18 @@ class App(tk.Tk):
         )
 
     def on_load(self):
+
+        # stop playing audio if a new song is loaded
+        if self.loaded_song is not None:
+            self.loaded_song.stop()
+        
         self.loaded_song = Song(aud.prompt_user())
         print(self.loaded_song)
         print("Load clicked!")
 
         self.button_r2.pack(pady=4)
-        self.play_button.pack(pady=4, padx=4)
-        self.stop_button.pack(pady=4, padx=4)
+        self.play_button.pack(side ="left", pady=4, padx=4)
+        self.stop_button.pack(side ="left", pady=4, padx=4)
 
     def on_play(self):
         self.loaded_song.ffplay_play()

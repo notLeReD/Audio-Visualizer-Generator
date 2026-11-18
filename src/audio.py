@@ -70,7 +70,10 @@ class Song():
 
         self.song.export(path, format="wav")
         self._proc = subprocess.Popen(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", path])
-    
+
+    """
+    This function closes the ffplay process when the program is stopped
+    """
     def stop(self):
         #subprocess for ffplay exists
         if self._proc is not None and self._proc.poll() is None:

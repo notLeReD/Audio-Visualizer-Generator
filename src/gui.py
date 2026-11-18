@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import audio as aud
+from audio import Song
 
 class App(tk.Tk):
     
@@ -22,7 +23,7 @@ class App(tk.Tk):
             command=self.on_load
         )
         
-        self.load_button.pack(pady=10)
+        self.load_button.pack(pady=4, padx=4)
 
         self.play_button = tk.Button(
             self, 
@@ -30,12 +31,12 @@ class App(tk.Tk):
             command=self.on_play
         )
 
-        self.play_button.pack(pady=10)
-
     def on_load(self):
         self.loaded_song = aud.prompt_user()
         print(self.loaded_song)
         print("Load clicked!")
+
+        self.play_button.pack(pady=4, padx=4)
 
     def on_play(self):
         aud.ffplay_play(self.loaded_song)

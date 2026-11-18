@@ -32,7 +32,7 @@ class App(tk.Tk):
         )
 
     def on_load(self):
-        self.loaded_song = aud.prompt_user()
+        self.loaded_song = Song(aud.prompt_user())
         print(self.loaded_song)
         print("Load clicked!")
 

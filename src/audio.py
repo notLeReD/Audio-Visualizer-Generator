@@ -38,9 +38,8 @@ class Song():
         self.dBFS = audio.dBFS
         self.peak_amp = audio.max
 
-    def print_attrib(self):
-        print(self.channels, self.frame_rate, self.sample_width)
-        print(self.dBFS, self.peak_amp, len(self.song))
+    def __str__(self):
+        return f"{self.channels}, {self.frame_rate}, {self.sample_width}, {self.dBFS}, {self.peak_amp}, {len(self.song)}"
 
     """
     A custom ffplay wrapper to play audio files
@@ -72,7 +71,6 @@ class Song():
             os.remove(path)
     
 
-
 """
     A simple test function to test pyDub features through functions
 
@@ -98,7 +96,7 @@ def prompt_user():
 def main():
     song = Song(prompt_user())
 
-    song.print_attrib()
+    print(song)
 
     song.ffplay_play()
 

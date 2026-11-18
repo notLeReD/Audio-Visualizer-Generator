@@ -28,28 +28,21 @@ FILETYPES = [
     ("All files", "*.*"),
 ]
 
-"""
-    A simple test function to test pyDub features through functions
+class Song():
 
-    #param filename: name of the file to playback
-    #type Audiosegment
+    def __init__(self, audio):
+        self.song = audio
+        self.channels = audio.channels
+        self.frame_rate = audio.frame_rate
+        self.sample_width = audio.sample_width
+        self.dBFS = audio.dBFS
+        self.peak_amp = audio.max
 
-    #return: None, playback of audio should play
-"""
-def playback(audio):
+    def print_attrib(self):
+        print(self.channels, self.frame_rate, self.sample_width)
+        print(self.dBFS, self.peak_amp, len(self.song))
 
-    chorus_start = 36 * 1000
-    chorus_end = 64 * 1000
-
-    chorus = audio[chorus_start:chorus_end]
-
-    chorus = chorus.fade_in(2000).fade_out(3000)
-
-    params = {k: v for k, v in vars(chorus).items() if k != "_data"}
-    print(params)
-    ffplay_play(chorus)
-
-"""
+    """
     A custom ffplay wrapper to play audio files
 
     - PyDub has a common Windows bug with it's built in ffplay player 
@@ -64,19 +57,30 @@ def playback(audio):
 
     #param song: file to play
     #type Audiosegment
+    """
+    def ffplay_play(self):
+        # Windows: close handle first or ffplay throws PermissionError
+        fd, path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
+
+        print(tempfile.gettempdir)
+
+        try:
+            self.song.export(path, format="wav")
+            subprocess.call(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", path])
+        finally:
+            os.remove(path)
+    
+
+
 """
-def ffplay_play(song):
-    # Windows: close handle first or ffplay throws PermissionError
-    fd, path = tempfile.mkstemp(suffix=".wav")
-    os.close(fd)
+    A simple test function to test pyDub features through functions
 
-    print(tempfile.gettempdir)
+    #param filename: name of the file to playback
+    #type Audiosegment
 
-    try:
-        song.export(path, format="wav")
-        subprocess.call(["ffplay", "-nodisp", "-autoexit", "-loglevel", "error", path])
-    finally:
-        os.remove(path)
+    #return: None, playback of audio should play
+"""
 
 def prompt_user():
     root = tk.Tk()
@@ -91,16 +95,12 @@ def prompt_user():
 
     return None
 
-def print_attrb(song):
-    print(song.channels, song.frame_rate, song.sample_width)
-    print(song.dBFS, song.max, song.max_possible_amplitude, len(song))
-
 def main():
-    song = prompt_user()
+    song = Song(prompt_user())
 
-    print_attrb(song)
+    song.print_attrib()
 
-    ffplay_play(song)
+    song.ffplay_play()
 
     return()
 

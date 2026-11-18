@@ -10,6 +10,10 @@ import os
 import subprocess
 import tempfile
 import tkinter as tk
+import numpy as np
+import librosa
+import matplotlib.animation as anim
+import matplotlib.pyplot as plt
 from tkinter import filedialog
 from pathlib import Path
 from pydub import AudioSegment
@@ -96,17 +100,13 @@ class Song():
                 pass
 
         self._tmp_path = None
-            
+
+    def plot_waveform():
+
 
 """
-    A simple test function to test pyDub features through functions
-
-    #param filename: name of the file to playback
-    #type Audiosegment
-
-    #return: None, playback of audio should play
+    This functon prompts the user for an audio file by opening their file explorer
 """
-
 def prompt_user():
     root = tk.Tk()
     root.withdraw()
@@ -128,7 +128,6 @@ def main():
     song.ffplay_play()
 
     return()
-
 
 if __name__ == '__main__':
     main()

@@ -28,7 +28,7 @@ class App(tk.Tk):
             command=self.on_load
         )
         
-        self.load_button.pack(pady=4, padx=4)
+        self.load_button.pack(pady=8, padx=4)
 
         self.button_r2 = tk.Frame(self)
 
@@ -46,7 +46,7 @@ class App(tk.Tk):
 
     def on_load(self):
 
-        # stop playing audio if a new song is loaded
+        # stop playing audio when new song is loaded
         if self.loaded_song is not None:
             self.loaded_song.stop()
         
@@ -55,8 +55,8 @@ class App(tk.Tk):
         print("Load clicked!")
 
         self.button_r2.pack(pady=4)
-        self.play_button.pack(side ="left", pady=4, padx=4)
-        self.stop_button.pack(side ="left", pady=4, padx=4)
+        self.play_button.pack(side ="left", padx=4)
+        self.stop_button.pack(side ="left", padx=4)
 
     def on_play(self):
         self.loaded_song.ffplay_play()

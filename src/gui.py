@@ -22,16 +22,24 @@ class App(tk.Tk):
         self.widgets()
 
     def widgets(self):
-        self.load_button = tk.Button(
-            self, 
-            text="Load Audio", 
-            command=self.on_load
-        )
-        
+
+        self._button_widgets()
         self.load_button.pack(pady=8, padx=4)
+        waveform = tk.Canvas(self, width)
 
+    def _button_widgets(self):
+
+        # first row
+        self.load_button = tk.Button(
+                    self, 
+                    text="Load Audio", 
+                    command=self.on_load
+                )
+
+
+        # second row of buttons
         self.button_r2 = tk.Frame(self)
-
+        
         self.play_button = tk.Button(
             self.button_r2, 
             text="Play Audio", 

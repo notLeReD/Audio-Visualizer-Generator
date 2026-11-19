@@ -11,9 +11,7 @@ import subprocess
 import tempfile
 import tkinter as tk
 import numpy as np
-import librosa
-import matplotlib.animation as anim
-import matplotlib.pyplot as plt
+import audiosegment
 from tkinter import filedialog
 from pathlib import Path
 from pydub import AudioSegment
@@ -101,8 +99,6 @@ class Song():
 
         self._tmp_path = None
 
-    def plot_waveform():
-
 
 """
     This functon prompts the user for an audio file by opening their file explorer
@@ -125,7 +121,9 @@ def main():
 
     print(song)
 
-    song.ffplay_play()
+    print(song.song.filter_bank())
+
+    #song.ffplay_play()
 
     return()
 

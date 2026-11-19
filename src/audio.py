@@ -11,7 +11,6 @@ import subprocess
 import tempfile
 import tkinter as tk
 import numpy as np
-import audiosegment
 from tkinter import filedialog
 from pathlib import Path
 from pydub import AudioSegment
@@ -120,8 +119,6 @@ def main():
     song = Song(prompt_user())
 
     print(song)
-
-    print(song.song.filter_bank())
 
     #song.ffplay_play()
 

@@ -15,6 +15,8 @@ import librosa
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 from matplotlib.ticker import ScalarFormatter
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import filedialog
 from pathlib import Path
 from pydub import AudioSegment
@@ -102,16 +104,18 @@ class Song():
 
         self._tmp_path = None
 
-    def draw_matplot(self):
+    def draw_matplot(self, master):
         samples, sr = self._to_librosa()
         dur = len(samples) / sr
         window_s = min(3, dur)
         peak = np.abs(samples).max()
 
-        fig, ax = plt.subplots()
+        fig = Figure(figsize=(5, 3.5))
+        wav = FigureCanvasTkAgg(fig, master=master)
+        ax = fig.add_subplot(111)
         fig.subplots_adjust(bottom=.32)
+
         librosa.display.waveshow(samples, sr=sr, ax=ax, linewidth=0.5)
-        
         ax.set_xlim(0, window_s)
         ax.set_ylim(-peak * 1.1, peak * 1.1)
 
@@ -141,7 +145,8 @@ class Song():
             self._scroll_slider.on_changed(update)
             self._zoom_slider.on_changed(update)
         
-        plt.show()
+        wav.draw()
+        return wav  
 
     def _to_librosa(self):
         samples = np.array(self.song.get_array_of_samples(), dtype=np.float32)

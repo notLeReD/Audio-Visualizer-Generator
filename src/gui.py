@@ -57,7 +57,6 @@ class App(tk.Tk):
         
         self.loaded_song = Song(aud.prompt_user())
         print(self.loaded_song)
-        print("Load clicked!")
 
         self.button_r2.pack(pady=4)
         self.play_button.pack(side ="left", padx=4)
@@ -69,6 +68,7 @@ class App(tk.Tk):
         #check if alr loaded, delete if so
         if self.waveform_widget is not None:
             self.waveform_widget.destroy()
+            self.waveform_widget = None
 
         waveform = self.loaded_song.draw_matplot(master=self)
         self.waveform_widget = waveform.get_tk_widget()
@@ -76,11 +76,9 @@ class App(tk.Tk):
 
     def on_play(self):
         self.loaded_song.ffplay_play()
-        print("Play Clicked!")
-
+        
     def on_stop(self):
         self.loaded_song.stop()
-        print("Stop Clicked!")
 
     def on_close(self):
         if self.loaded_song is not None:

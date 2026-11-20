@@ -11,6 +11,10 @@ import subprocess
 import tempfile
 import tkinter as tk
 import numpy as np
+import librosa
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
+from matplotlib.ticker import ScalarFormatter
 from tkinter import filedialog
 from pathlib import Path
 from pydub import AudioSegment
@@ -98,6 +102,61 @@ class Song():
 
         self._tmp_path = None
 
+    def draw_matplot(self):
+        samples, sr = self._to_librosa()
+        dur = len(samples) / sr
+        window_s = min(3, dur)
+        peak = np.abs(samples).max()
+
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=.32)
+        librosa.display.waveshow(samples, sr=sr, ax=ax, linewidth=0.5)
+        
+        ax.set_xlim(0, window_s)
+        ax.set_ylim(-peak * 1.1, peak * 1.1)
+
+        fmt = ScalarFormatter(useOffset=False)
+        fmt.set_scientific(False)
+        ax.xaxis.set_major_formatter(fmt)
+        ax.set_xlabel("Time (s)")
+
+        if (dur > window_s):
+            slider_ax = fig.add_axes([.15, .14, .7, .04])
+            zoom_ax = fig.add_axes([.15, .06, .7, .04])
+            
+            self._scroll_slider = Slider(
+                slider_ax, "Time (s)", 0, dur - window_s, valinit=0, valfmt="%.1f"
+            )
+
+            self._zoom_slider = Slider(
+                zoom_ax, "Position", .05, min(dur, 30), valinit=window_s, valfmt="%.2f"
+            )
+
+            def update(start):
+                win = self._zoom_slider.val
+                start = min(self._scroll_slider.val, dur - win)
+                ax.set_xlim(start, start + win)
+                fig.canvas.draw_idle()
+
+            self._scroll_slider.on_changed(update)
+            self._zoom_slider.on_changed(update)
+        
+        plt.show()
+
+    def _to_librosa(self):
+        samples = np.array(self.song.get_array_of_samples(), dtype=np.float32)
+        
+        samples /= 2 ** (8 * self.song.sample_width - 1)
+
+        if self.song.channels > 1:
+            samples = samples.reshape((-1, self.song.channels)).T
+
+            samples = librosa.to_mono(samples)
+
+        sr = self.song.frame_rate
+
+        return samples, sr
+
 
 """
     This functon prompts the user for an audio file by opening their file explorer
@@ -119,6 +178,8 @@ def main():
     song = Song(prompt_user())
 
     print(song)
+
+    song.draw_matplot()
 
     #song.ffplay_play()
 

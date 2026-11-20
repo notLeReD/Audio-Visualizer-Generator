@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 import audio as aud
 from audio import Song
 
@@ -13,7 +12,6 @@ class App(tk.Tk):
         self.maxsize(850, 850)
         self.geometry("500x500+100+100")
         
-        
 
         self.loaded_song = None
 
@@ -24,8 +22,8 @@ class App(tk.Tk):
     def widgets(self):
 
         self._button_widgets()
+        self.waveform_widget = None
         self.load_button.pack(pady=8, padx=4)
-        waveform = tk.Canvas(self, width)
 
     def _button_widgets(self):
 
@@ -35,7 +33,6 @@ class App(tk.Tk):
                     text="Load Audio", 
                     command=self.on_load
                 )
-
 
         # second row of buttons
         self.button_r2 = tk.Frame(self)
@@ -65,6 +62,17 @@ class App(tk.Tk):
         self.button_r2.pack(pady=4)
         self.play_button.pack(side ="left", padx=4)
         self.stop_button.pack(side ="left", padx=4)
+
+        self._load_waveform()
+
+    def _load_waveform(self):
+        #check if alr loaded, delete if so
+        if self.waveform_widget is not None:
+            self.waveform_widget.destroy()
+
+        waveform = self.loaded_song.draw_matplot(master=self)
+        self.waveform_widget = waveform.get_tk_widget()
+        self.waveform_widget.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def on_play(self):
         self.loaded_song.ffplay_play()
